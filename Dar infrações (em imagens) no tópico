@@ -1,0 +1,56 @@
+<div style="display: none;" class="infract-box" id="quicknavbs">
+   <div class="popupWrapper" style="z-index: 10001; float: left; top: 15%; left: 50%; margin: 0 0 0 -250px; position: fixed;" id="navigation_popup_popup">
+      <div style="width: 600px;" class="popupInner" id="navigation_popup_inner">
+         <h3 style="font-family: trebuchet ms;">Infratar o usuário <b class="infract-user">X</b></h3>
+         <div style="height: auto; max-height: 300px; overflow: auto;" class="fixed_inner ipsBox">
+            <div id="main_abas">
+               <div class="aba" id="aba2" style="display: block; margin-left: 0px; min-height: 100%;">
+                  <div id="category" style="padding: 10px;text-align: center;">
+                     <div class="infract-opts"><br><br></div>
+                     <b id="success" style="padding: 12px 0;display: none;">Infração aplicada com sucesso!</b>
+                     <div class="infract-buttons">
+                        <input type="hidden" name="inf-user" value="">
+                        <input type="hidden" name="inf-id" value="">
+                        <input type="button" value="Infratar" onclick="infract(jQuery(this).closest('#category').find('.infract-opts &gt; *:first input:checked').attr('value')); return false;">
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div onclick="jQuery('#quicknavbs').fadeOut();" class="popupClose clickable" id="navigation_popup_close">
+         <img alt="x" src="http://i55.servimg.com/u/f55/17/96/03/52/close10.png">
+      </div>
+      <style>.popupWrapper {background-color: #464646;background-color: rgba(70, 70, 70, 0.6);padding: 4px;-webkit-box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.7);-moz-box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.7);box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.7 );-moz-border-radius: 4px;-webkit-border-radius: 4px;border-radius: 4px;font-family: trebuchet ms;}.popupInner {background: white;width: 500px;overflow: auto;-webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.4);-moz-box-shadow: 0px 0px 3px rgba(0,0,0,0.4);box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.4);overflow-x: hidden;}.popupInner h3 {background: url(http://i57.servimg.com/u/f57/18/12/37/46/main-b10.png) repeat-x;background-color: #141414;color: white;padding: 8px 10px 9px;font-size: 16px;font-weight: 300;text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);}.popupClose {cursor: pointer;position: absolute;right: 15px;top: 15px;}.ipsBox, .ipsPad {padding: 9px;}.ipsBox {background: #eee;}.block_list > li {padding: 5px 10px;list-style-type: none;border-top: 1px solid #fff;border-bottom: 1px solid #eaeaea;}div.aba {margin-left: 153px;background:#fcfcfc;text-align:justify;min-height: 400px;border: 1px solid #dcdcdc!important;}#navebar {border-top: 1px solid #dcdcdc;border-bottom: 1px solid #dcdcdc;border-left: 1px solid #dcdcdc;font:bold 12px trebuchet ms;margin:0;float: left;}#navebar li {display: block;background: #f5f5f5;color: #808080;border-bottom: 1px solid #dcdcdc;list-style:none;}#navebar li a:hover {background:#f2f2f2;color:#808080;}#navebar li a.active {width: 135px;position: relative;z-index: 8000;border-right: 2px solid #fcfcfc;background: #fcfcfc;color: #353535;font-weight: bold;}#navebar li a {border-right: 1px solid #dcdcdc;font-weight: normal;cursor: pointer;background: #f5f5f5;color: #8d8d8d;padding: 10px 8px;outline: 0;color: #8d8d8d;-webkit-transition: background-color 0.1s ease-in-out;-moz-transition: background-color 0.3s ease-in-out;text-decoration:none;width:135px;display:block;}.infract .infract-span {text-transform: uppercase;color: #555;font-weight: bold;font-size: 10px;display: inline-block;margin-bottom: -1px;text-decoration: underline;}</style>
+   </div>
+</div>
+<script>jQuery(function() {
+   jQuery('.post').find('.user .user-info').prepend('<dd class="infract"><div class="post_field"><a href="#" onclick="infract_box(jQuery(this).closest(\'.user\').find(\'.user-ident h4.username a:first\').attr(\'href\'),jQuery(this).closest(\'.user\').find(\'.user-ident h4.username a:first\').text()); return false;"><span class="label infract-span">Infratar usuário</span></a></div><br></dd>');
+   jQuery.getScript('http://illiweb.com/rsc/17/frm/jquery/json/jquery.json-1.3.min.js');
+});
+function infract_box(ulink,username) {
+   infbox = jQuery('.infract-box');
+   uid = ulink.split('/u').join('');
+   jQuery.get(ulink, function(data) {
+      infopts = jQuery('#profile-advanced-details .main-content .middleline dl:contains("Barra de ocorrências") dd .invisible', data).html();
+      infbox.find('.infract-opts').html(infopts+'<br><br>');
+      pid = jQuery('#profile-advanced-details .main-content .middleline dl:contains("Barra de ocorrências") dd .invisible > *', data).attr('id');
+   });
+   infbox.fadeToggle();
+   infbox.find('.popupInner h3:first b.infract-user').text(username);
+   infbox.find('.infract-buttons input[name="inf-id"]').val(uid);
+   infbox.find('.infract-buttons input[name="inf-user"]').val(username);
+}
+function infract(infract) {
+   var iddouser = uid;
+   var ttt = [[pid, infract]];
+   $.ajax({
+      url:"/ajax_profile.forum?jsoncallback=?",
+      type:"POST",
+      data:{id:"1",user:iddouser,active:"1",content:$.toJSON(ttt)},
+      dataType:"json"
+   });
+   infbox.find('#category .infract-opts, #category .infract-buttons').hide();
+   infbox.find('b#success').show();
+   setTimeout(function() {infbox.fadeToggle()}, 2000);
+}</script>
